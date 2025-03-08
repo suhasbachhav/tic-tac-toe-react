@@ -11,18 +11,16 @@ const initialGameBoard = [
   [null, null, null]
 ];
 
+const PLAYERS = {
+  X: 'Player 1',
+  O: 'Player 2',
+};
+
 function deriveActivePlayer(gameTurns) {
   return (gameTurns.length > 0 && gameTurns[0].player === 'X') ? 'O' : 'X';
 }
 
-function App() {
-  const [players, setPlayers] = useState({
-    'X': 'Player 1',
-    'O': 'Player 2',
-  });
-  const [gameTurns, setGameTurns] = useState([]);
-  const activePlayer = deriveActivePlayer(gameTurns);
-
+function deriveGameBoard(gameTurns){
   let gameBoard = [...initialGameBoard.map(arr=> [...arr])];
 
   for (const turn of gameTurns) {
@@ -30,16 +28,30 @@ function App() {
     const { row, col } = square;
     gameBoard[row][col] = player;
   }
-  let winner = null;
+  return gameBoard;
+}
 
+function deriveWinner(gameBoard, players){
+  
   for (const combination of WINNING_COMBINATION) {
     const firstSquareSymbol = gameBoard[combination[0].row][combination[0].col];
     const secondSquareSymbol = gameBoard[combination[1].row][combination[1].col];
     const thirdSquareSymbol = gameBoard[combination[2].row][combination[2].col];
 
     if (firstSquareSymbol && firstSquareSymbol === secondSquareSymbol && firstSquareSymbol === thirdSquareSymbol)
-      winner = players[firstSquareSymbol];
+      return players[firstSquareSymbol];
   }
+  return null;
+}
+
+function App() {
+  const [players, setPlayers] = useState(PLAYERS);
+  const [gameTurns, setGameTurns] = useState([]);
+
+  const activePlayer = deriveActivePlayer(gameTurns);
+  const gameBoard = deriveGameBoard(gameTurns)
+  const winner = deriveWinner(gameBoard, players);
+  
 
   const gameDraw = gameTurns.length === 9 && !winner;
 
@@ -81,8 +93,8 @@ function App() {
       </header>
       <div id="game-container">
         <ol id="players" className="highlight-player">
-          <Player name="Player 1" symbol="X" isActive={activePlayer === 'X'} onChangeName={handlePlayerNameChange}/>
-          <Player name="Player 2" symbol="O" isActive={activePlayer === 'O'} onChangeName={handlePlayerNameChange}/>
+          <Player name={PLAYERS.X} symbol="X" isActive={activePlayer === 'X'} onChangeName={handlePlayerNameChange}/>
+          <Player name={PLAYERS.O} symbol="O" isActive={activePlayer === 'O'} onChangeName={handlePlayerNameChange}/>
         </ol>
         {(winner || gameDraw) && <GameOver winner={winner} onRestart={handleRestart}/>}
         <GameBoard onSelectSquare={handleSelectSquare} board={gameBoard} />
