@@ -1,3 +1,4 @@
+import GameBoard from "./components/GameBoard.jsx";
 import Player from "./components/Player.jsx";
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
           <Player name="Player 1" symbol="X" />
           <Player name="Player 2" symbol="O" />
         </ol>
+        <GameBoard/>
       </div>
     </main>
   );
